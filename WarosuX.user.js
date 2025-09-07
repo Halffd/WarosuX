@@ -1046,7 +1046,11 @@ createCleanPost($originalPost, level) {
 
             console.log('🧵 WarosuX initialized successfully!');
             console.log('📋 Shortcuts: Ctrl+T (thread), Ctrl+D (debug), Ctrl+E (export)');
-            
+            if(document.URL.includes("#")){
+                let postId = document.URL.split("#")[1];
+                // focus on post
+                $(`#${postId}-threaded`)[0].scrollIntoView();
+            }
         } catch (error) {
             console.error('[WarosuX] Initialization failed:', error);
         }
