@@ -11,171 +11,163 @@
 
 (function() {
     'use strict';
+GM_addStyle(`
+    /* === CONFIGURATION VARIABLES === */
+    :root {
+        /* Font Settings */
+        --warosu-font-scale: 1.8;
+        --warosu-post-font-scale: 2.2;
+        --warosu-font-color: #333333;
+        --warosu-font-weight: 400;
+        --warosu-font-weight-bold: 600;
 
-    // Add custom CSS for threading
-    GM_addStyle(`
-        .warosu-thread-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 10px;
-        }
+        /* Background Colors */
+        --warosu-bg-main: #ffffff;
+        --warosu-bg-post: #f9f9f9;
+        --warosu-bg-op: #e6f3ff;
+        --warosu-bg-container: #ffffff;
 
-        .warosu-post {
-            margin: 10px 0;
-            padding: 8px;
-            border-left: 3px solid #ddd;
-            background: #f9f9f9;
-        }
+        /* Post Sizing */
+        --warosu-post-padding: 8px;
+        --warosu-post-margin: 10px 0;
+        --warosu-post-border-width: 4px;
+        --warosu-post-border-radius: 4px;
 
-        .warosu-post.level-0 { margin-left: 0px; border-color: #0066cc; }
-        .warosu-post.level-1 { margin-left: 20px; border-color: #2d8a2f; }
-        .warosu-post.level-2 { margin-left: 40px; border-color: #d4691a; }
-        .warosu-post.level-3 { margin-left: 60px; border-color: #b02db0; }
-        .warosu-post.level-4 { margin-left: 80px; border-color: #c41e3a; }
-        .warosu-post.level-5 { margin-left: 100px; border-color: #8b4513; }
-        .warosu-post.level-6 { margin-left: 120px; border-color: #4b0082; }
-        .warosu-post.level-7 { margin-left: 140px; border-color: #ff1493; }
-        .warosu-post.level-8 { margin-left: 160px; border-color: #00ced1; }
-
-        .warosu-post.op {
-            background: #e6f3ff;
-            border-color: #0066cc;
-            border-width: 4px;
-        }
-
-        .warosu-level-indicator {
-            display: inline-block;
-            font-weight: bold;
-            font-size: 11px;
-            margin-right: 5px;
-            padding: 2px 6px;
-            border-radius: 3px;
-            background: #333;
-            color: white;
-        }
-
-        .warosu-quote-count {
-            background: #666;
-            color: #fff;
-            font-size: 10px;
-            padding: 1px 4px;
-            border-radius: 2px;
-            margin-left: 5px;
-        }
-
-        .warosu-controls {
-            text-align: center;
-            margin: 20px 0;
-            padding: 10px;
-            background: #f0f0f0;
-            border-radius: 5px;
-        }
-
-        .warosu-btn {
-            background: #0066cc;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            margin: 0 5px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        .warosu-btn:hover {
-            background: #0052a3;
-        }
-
-        .warosu-stats {
-            font-size: 12px;
-            color: #666;
-            margin: 10px 0;
-            text-align: center;
-        }
-
-        @media (max-width: 768px) {
-            .warosu-post.level-1 { margin-left: 10px; }
-            .warosu-post.level-2 { margin-left: 20px; }
-            .warosu-post.level-3 { margin-left: 30px; }
-            .warosu-post.level-4 { margin-left: 40px; }
-            .warosu-post.level-5 { margin-left: 50px; }
-            .warosu-post.level-6 { margin-left: 60px; }
-            .warosu-post.level-7 { margin-left: 70px; }
-            .warosu-post.level-8 { margin-left: 80px; }
-        }
-    `);
-
-  GM_addStyle(`
-    /* Container */
-    .warosu-thread-container {
-        max-width: 1200px !important;
-        margin: 0 auto !important;
-        padding: 10px !important;
-        background: #fff !important;
+        /* Reply Indentation */
+        --warosu-indent-base: 15px;
+        --warosu-indent-mobile: 12px;
     }
 
-    /* Individual posts */
+    /* === MAIN STYLES WITH VARIABLES === */
+    .warosu-thread-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 10px;
+        background: var(--warosu-bg-container) !important;
+        font-size: calc(14px * var(--warosu-font-scale));
+        color: var(--warosu-font-color);
+        font-weight: var(--warosu-font-weight);
+    }
+
     .warosu-post {
-        margin: 10px 0 !important;
-        padding: 12px !important;
-        border-left: 4px solid #ddd !important;
-        background: #f9f9f9 !important;
+        margin: var(--warosu-post-margin) !important;
+        padding: var(--warosu-post-padding) !important;
+        border-left: var(--warosu-post-border-width) solid #ddd !important;
+        background: var(--warosu-bg-post) !important;
         display: block !important;
         width: calc(100% - 20px) !important;
         box-sizing: border-box !important;
-        border-radius: 4px !important;
+        border-radius: var(--warosu-post-border-radius) !important;
+        font-size: calc(13px * var(--warosu-font-scale)) !important;
+        color: var(--warosu-font-color) !important;
+        font-weight: var(--warosu-font-weight) !important;
+        line-height: 1.0 !important;
     }
 
-    /* Level colors and indentation */
-    .warosu-post.level-0 { margin-left: 0px !important; border-left-color: #0066cc !important; }
-    .warosu-post.level-1 { margin-left: 25px !important; border-left-color: #2d8a2f !important; }
-    .warosu-post.level-2 { margin-left: 50px !important; border-left-color: #d4691a !important; }
-    .warosu-post.level-3 { margin-left: 75px !important; border-left-color: #b02db0 !important; }
-    .warosu-post.level-4 { margin-left: 100px !important; border-left-color: #c41e3a !important; }
-    .warosu-post.level-5 { margin-left: 125px !important; border-left-color: #8b4513 !important; }
-    .warosu-post.level-6 { margin-left: 150px !important; border-left-color: #4b0082 !important; }
-    .warosu-post.level-7 { margin-left: 175px !important; border-left-color: #ff1493 !important; }
-    .warosu-post.level-8 { margin-left: 200px !important; border-left-color: #00ced1 !important; }
-
-    /* OP styling */
-    .warosu-post.op {
-        background: #e6f3ff !important;
+    /* Level colors and indentation with variables */
+    .warosu-post.level-0 {
+        margin-left: 0px !important;
         border-left-color: #0066cc !important;
-        border-left-width: 6px !important;
-        font-weight: bold !important;
+    }
+    .warosu-post.level-1 {
+        margin-left: calc(var(--warosu-indent-base) * 1) !important;
+        border-left-color: #2d8a2f !important;
+    }
+    .warosu-post.level-2 {
+        margin-left: calc(var(--warosu-indent-base) * 2) !important;
+        border-left-color: #d4691a !important;
+    }
+    .warosu-post.level-3 {
+        margin-left: calc(var(--warosu-indent-base) * 3) !important;
+        border-left-color: #b02db0 !important;
+    }
+    .warosu-post.level-4 {
+        margin-left: calc(var(--warosu-indent-base) * 4) !important;
+        border-left-color: #c41e3a !important;
+    }
+    .warosu-post.level-5 {
+        margin-left: calc(var(--warosu-indent-base) * 5) !important;
+        border-left-color: #8b4513 !important;
+    }
+    .warosu-post.level-6 {
+        margin-left: calc(var(--warosu-indent-base) * 6) !important;
+        border-left-color: #4b0082 !important;
+    }
+    .warosu-post.level-7 {
+        margin-left: calc(var(--warosu-indent-base) * 7) !important;
+        border-left-color: #ff1493 !important;
+    }
+    .warosu-post.level-8 {
+        margin-left: calc(var(--warosu-indent-base) * 8) !important;
+        border-left-color: #00ced1 !important;
     }
 
-    /* Images in threaded posts */
-    .warosu-post img {
-        max-width: 150px !important;
-        height: auto !important;
-        display: block !important;
-        margin: 8px 0 !important;
-        border: 1px solid #ddd !important;
-        border-radius: 3px !important;
+    /* OP styling with variables */
+    .warosu-post.op {
+        background: var(--warosu-bg-op) !important;
+        border-left-color: #0066cc !important;
+        border-left-width: calc(var(--warosu-post-border-width) + 2px) !important;
+        font-weight: var(--warosu-font-weight-bold) !important;
+        margin-bottom: calc(var(--warosu-post-margin) + 5px) !important;
     }
 
-    /* File info */
+    .warosu-post.op::before {
+        content: "OP";
+        display: inline-block;
+        background: #0066cc;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: calc(10px * var(--warosu-font-scale));
+        font-weight: var(--warosu-font-weight-bold);
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+
+    /* Text elements with font scaling */
+    .warosu-post .postername {
+        font-weight: var(--warosu-font-weight-bold) !important;
+        color: #0066cc !important;
+        font-size: calc(13px * var(--warosu-font-scale)) !important;
+    }
+
+    .warosu-post .postertrip {
+        color: #228b22 !important;
+        font-weight: var(--warosu-font-weight) !important;
+        font-size: calc(13px * var(--warosu-font-scale)) !important;
+    }
+
+    .warosu-post .posttime {
+        color: #999 !important;
+        font-size: calc(11px * var(--warosu-font-scale)) !important;
+        font-weight: var(--warosu-font-weight) !important;
+    }
+
     .warosu-post .fileinfo {
         display: block !important;
         margin: 5px 0 !important;
-        font-size: 11px !important;
+        font-size: calc(11px * var(--warosu-font-scale)) !important;
         color: #666 !important;
+        font-weight: var(--warosu-font-weight) !important;
     }
-
-    /* Post content */
+blockquote > p{
+  margin: 0 !important;
+}
     .warosu-post blockquote {
-        margin: 10px 0 !important;
+        margin: calc(10px * var(--warosu-font-scale)) 0 !important;
         padding: 0 !important;
         border: none !important;
-        font-size: 13px !important;
-        line-height: 1.4 !important;
+        font-size: calc(13px * var(--warosu-font-scale) * var(--warosu-post-font-scale)) !important;
+        line-height: 1.2 !important;
+        color: var(--warosu-font-color) !important;
+        font-weight: var(--warosu-font-weight) !important;
     }
 
-    /* Level indicators */
+    /* Level indicators with scaling */
     .warosu-level-indicator {
         display: inline-block !important;
-        font-weight: bold !important;
-        font-size: 10px !important;
+        font-weight: var(--warosu-font-weight-bold) !important;
+        font-size: calc(10px * var(--warosu-font-scale)) !important;
         margin-right: 8px !important;
         padding: 2px 6px !important;
         border-radius: 3px !important;
@@ -187,7 +179,8 @@
     .warosu-quote-count {
         background: #666 !important;
         color: #fff !important;
-        font-size: 9px !important;
+        font-size: calc(9px * var(--warosu-font-scale)) !important;
+        font-weight: var(--warosu-font-weight-bold) !important;
         padding: 1px 4px !important;
         border-radius: 2px !important;
         margin-left: 5px !important;
@@ -195,50 +188,84 @@
         vertical-align: middle !important;
     }
 
-    /* Post metadata */
-    .warosu-post .postername {
-        font-weight: bold !important;
-        color: #0066cc !important;
-    }
-
-    .warosu-post .postertrip {
-        color: #228b22 !important;
-        font-weight: normal !important;
-    }
-
-    .warosu-post .posttime {
-        color: #999 !important;
-        font-size: 11px !important;
-    }
-
-    /* Links */
+    /* Links with font scaling */
     .warosu-post a {
         color: #0066cc !important;
         text-decoration: underline !important;
+        font-size: calc(13px * var(--warosu-font-scale)) !important;
+        font-weight: var(--warosu-font-weight) !important;
     }
 
     .warosu-post a:hover {
         color: #0052a3 !important;
     }
 
-    /* Mobile responsive */
+    /* Images */
+    .warosu-post img {
+        max-width: 150px !important;
+        height: auto !important;
+        display: block !important;
+        margin: calc(8px * var(--warosu-font-scale)) 0 !important;
+        border: 1px solid #ddd !important;
+        border-radius: 3px !important;
+    }
+
+    /* Controls and buttons with scaling */
+    .warosu-controls {
+        text-align: center;
+        margin: 20px 0;
+        padding: 10px;
+        background: #f0f0f0;
+        border-radius: 5px;
+        font-size: calc(14px * var(--warosu-font-scale));
+    }
+
+    .warosu-btn {
+        background: #0066cc;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        margin: 0 5px;
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: calc(13px * var(--warosu-font-scale));
+        font-weight: var(--warosu-font-weight-bold);
+    }
+
+    .warosu-btn:hover {
+        background: #0052a3;
+    }
+
+    .warosu-stats {
+        font-size: calc(12px * var(--warosu-font-scale));
+        color: #666;
+        margin: 10px 0;
+        text-align: center;
+        font-weight: var(--warosu-font-weight);
+    }
+
+    /* Mobile responsive with variables */
     @media (max-width: 768px) {
-        .warosu-post.level-1 { margin-left: 15px !important; }
-        .warosu-post.level-2 { margin-left: 30px !important; }
-        .warosu-post.level-3 { margin-left: 45px !important; }
-        .warosu-post.level-4 { margin-left: 60px !important; }
-        .warosu-post.level-5 { margin-left: 75px !important; }
-        .warosu-post.level-6 { margin-left: 90px !important; }
-        .warosu-post.level-7 { margin-left: 105px !important; }
-        .warosu-post.level-8 { margin-left: 120px !important; }
+        .warosu-post.level-1 { margin-left: calc(var(--warosu-indent-mobile) * 1) !important; }
+        .warosu-post.level-2 { margin-left: calc(var(--warosu-indent-mobile) * 2) !important; }
+        .warosu-post.level-3 { margin-left: calc(var(--warosu-indent-mobile) * 3) !important; }
+        .warosu-post.level-4 { margin-left: calc(var(--warosu-indent-mobile) * 4) !important; }
+        .warosu-post.level-5 { margin-left: calc(var(--warosu-indent-mobile) * 5) !important; }
+        .warosu-post.level-6 { margin-left: calc(var(--warosu-indent-mobile) * 6) !important; }
+        .warosu-post.level-7 { margin-left: calc(var(--warosu-indent-mobile) * 7) !important; }
+        .warosu-post.level-8 { margin-left: calc(var(--warosu-indent-mobile) * 8) !important; }
 
         .warosu-post img {
             max-width: 100px !important;
         }
+
+        :root {
+            --warosu-font-scale: 0.9; /* Smaller fonts on mobile */
+            --warosu-post-padding: 10px; /* Less padding on mobile */
+        }
     }
-`);
-  GM_addStyle(`
-    /* DESTROY TABLE LAYOUT BUT PRESERVE IMAGES */
+
+    /* Table layout fixes */
     .warosu-thread-container table:not(.image-table),
     .warosu-thread-container tbody,
     .warosu-thread-container tr:not(.image-row),
@@ -250,144 +277,8 @@
         margin: 0 !important;
     }
 
-    /* PRESERVE IMAGE STRUCTURE */
-    .warosu-thread-container img {
-        display: block !important;
-        max-width: 150px !important; /* Reasonable thumbnail size */
-        height: auto !important;
-        margin: 5px 0 !important;
-        border: 1px solid #ddd !important;
-    }
-
-    .warosu-thread-container .thumb {
-        display: block !important;
-        margin: 5px 0 !important;
-    }
-
-    .warosu-thread-container .fileinfo {
-        display: block !important;
-        margin: 5px 0 !important;
-        font-size: 11px !important;
-        color: #666 !important;
-    }
-
-    .warosu-thread-container a[href*="image/"],
-    .warosu-thread-container a[href*=".jpg"],
-    .warosu-thread-container a[href*=".png"],
-    .warosu-thread-container a[href*=".gif"],
-    .warosu-thread-container a[href*=".webm"] {
-        display: inline-block !important;
-        margin: 5px 0 !important;
-    }
-
-    /* Remove the >> arrows from table cells */
     .warosu-thread-container .doubledash {
         display: none !important;
-    }
-
-    .warosu-thread-container {
-        max-width: 1200px !important;
-        margin: 0 auto !important;
-        padding: 10px !important;
-    }
-
-    .warosu-post {
-        margin: 10px 0 !important;
-        padding: 8px !important;
-        border-left: 3px solid #ddd !important;
-        background: #f9f9f9 !important;
-        display: block !important;
-        width: 100% !important;
-        clear: both !important;
-        box-sizing: border-box !important;
-    }
-
-    /* Level indentation */
-    .warosu-post.level-0 { margin-left: 0px !important; border-color: #0066cc !important; }
-    .warosu-post.level-1 { margin-left: 20px !important; border-color: #2d8a2f !important; }
-    .warosu-post.level-2 { margin-left: 40px !important; border-color: #d4691a !important; }
-    .warosu-post.level-3 { margin-left: 60px !important; border-color: #b02db0 !important; }
-    .warosu-post.level-4 { margin-left: 80px !important; border-color: #c41e3a !important; }
-    .warosu-post.level-5 { margin-left: 100px !important; border-color: #8b4513 !important; }
-    .warosu-post.level-6 { margin-left: 120px !important; border-color: #4b0082 !important; }
-    .warosu-post.level-7 { margin-left: 140px !important; border-color: #ff1493 !important; }
-    .warosu-post.level-8 { margin-left: 160px !important; border-color: #00ced1 !important; }
-
-    .warosu-post.op {
-        background: #e6f3ff !important;
-        border-color: #0066cc !important;
-        border-width: 4px !important;
-    }
-
-    /* Level indicators */
-    .warosu-level-indicator {
-        display: inline-block !important;
-        font-weight: bold !important;
-        font-size: 11px !important;
-        margin-right: 5px !important;
-        padding: 2px 6px !important;
-        border-radius: 3px !important;
-        background: #333 !important;
-        color: white !important;
-    }
-
-    .warosu-quote-count {
-        background: #666 !important;
-        color: #fff !important;
-        font-size: 10px !important;
-        padding: 1px 4px !important;
-        border-radius: 2px !important;
-        margin-left: 5px !important;
-        display: inline-block !important;
-    }
-
-    /* Better post structure */
-    .warosu-post .postername {
-        font-weight: bold !important;
-        color: #0066cc !important;
-    }
-
-    .warosu-post .postertrip {
-        color: #228b22 !important;
-    }
-
-    .warosu-post .posttime {
-        color: #666 !important;
-        font-size: 11px !important;
-    }
-
-    .warosu-post blockquote {
-        margin: 8px 0 !important;
-        padding-left: 10px !important;
-        border-left: 2px solid #ccc !important;
-        color: #333 !important;
-    }
-`);
-  GM_addStyle(`
-    /* Make OP stand out more */
-    .warosu-post.op {
-        background: linear-gradient(135deg, #e6f3ff 0%, #f0f8ff 100%) !important;
-        border-left-color: #0066cc !important;
-        border-left-width: 6px !important;
-        margin-bottom: 15px !important;
-    }
-
-    .warosu-post.op .warosu-level-indicator {
-        background: #0066cc !important;
-        color: white !important;
-    }
-
-    .warosu-post.op::before {
-        content: "OP";
-        display: inline-block;
-        background: #0066cc;
-        color: white;
-        padding: 2px 6px;
-        border-radius: 3px;
-        font-size: 10px;
-        font-weight: bold;
-        margin-right: 8px;
-        vertical-align: middle;
     }
 `);
     class WarosuThreader {
@@ -1155,7 +1046,7 @@ createCleanPost($originalPost, level) {
 
             console.log('🧵 WarosuX initialized successfully!');
             console.log('📋 Shortcuts: Ctrl+T (thread), Ctrl+D (debug), Ctrl+E (export)');
-
+            
         } catch (error) {
             console.error('[WarosuX] Initialization failed:', error);
         }
